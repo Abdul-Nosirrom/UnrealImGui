@@ -2,9 +2,9 @@
 
 #include "Application/ThrottleManager.h"
 #include "ImGuiHelper.h"
-#include "ImGuiInputCatcherWidget.h"
+#include "SImGuiInputCatcherWidget.h"
 #include "ImGuiInputHelper.h"
-#include "ImGuiWidget.h"
+#include "SImGuiWidget.h"
 #include "Engine/Console.h"
 #include "Engine/Engine.h"
 #include "Engine/GameViewportClient.h"
@@ -32,6 +32,8 @@ void FImGuiContext::Initialize()
     {
         return;
     }
+
+	bCalledBeginFrame = false;
 
     FSlateApplication& SlateApp = FSlateApplication::Get();
 
@@ -121,7 +123,9 @@ void FImGuiContext::Shutdown()
         }
     }
 
-    GameViewport->RemoveViewportWidgetContent(MainWidget.ToSharedRef());
+	//if (GameViewport)
+	GameViewport->RemoveViewportWidgetContent(MainWidget.ToSharedRef());
+	MainWidget = nullptr; // Need to make sure its destroyed.Widget might still be active for a bit after the viewport is destroyed, causing it to receive input events then crash when it gets the now invalid imgui context
 
     if (PlotContext)
     {
@@ -162,20 +166,14 @@ void FImGuiContext::OnDisplayMetricsChanged(const FDisplayMetrics& DisplayMetric
     }
 }
 
+void FImGuiContext::BeginFrame()
+{
+	bCalledBeginFrame = BeginFrame(FApp::GetDeltaTime());
+}
+
 //--------------------------------------------------------------------------------------------------------------------------
 bool FImGuiContext::BeginFrame(float InDeltaTime)
 {
-    //-------------------------------------------------------------------------------------------------------
-    // Skip the first frame, to let the main widget update its TickSpaceGeometry which is returned by the
-    // plateform callback ImGui_GetWindowPos. When using viewports Imgui needs to know the main viewport
-    // absolute position to correctly place the initial imgui windows.
-    //-------------------------------------------------------------------------------------------------------
-    if (bIsFirstFrame)
-    {
-        bIsFirstFrame = false;
-        return false;
-    }
-
     ImGui::SetCurrentContext(ImGuiContext);
     ImPlot::SetImGuiContext(ImGuiContext);
     ImPlot::SetCurrentContext(PlotContext);
@@ -183,7 +181,7 @@ bool FImGuiContext::BeginFrame(float InDeltaTime)
     ImGuiIO& IO = ImGui::GetIO();
     IO.DeltaTime = InDeltaTime;
     IO.DisplaySize = FImGuiHelper::ToImVec2(MainWidget->GetTickSpaceGeometry().GetAbsoluteSize());
-
+	
     //-------------------------------------------------------------------------------------------------------
     // Build font
     //-------------------------------------------------------------------------------------------------------
@@ -287,6 +285,11 @@ bool FImGuiContext::BeginFrame(float InDeltaTime)
 //--------------------------------------------------------------------------------------------------------------------------
 void FImGuiContext::EndFrame()
 {
+	//if (!bCalledBeginFrame) return;
+
+	// Haven't initialized viewport yet
+	//if (!ImGuiContext) return;
+
     ImGui::Render();
     ImGui_RenderWindow(ImGui::GetMainViewport(), nullptr);
 
@@ -612,7 +615,6 @@ void FImGuiContext::SetEnableInput(bool Value)
         {
             FSlateThrottleManager::Get().DisableThrottle(false);
         }
-
         if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
         {
             LocalPlayer->GetSlateOperations().CaptureMouse(GameViewport->GetGameViewportWidget().ToSharedRef());
@@ -626,20 +628,22 @@ void FImGuiContext::SetEnableInput(bool Value)
 void FImGuiContext::SetShareMouse(bool Value)
 {
     bShareMouse = Value;
-    RefreshMouseCursor();
+	RefreshMouseCursor();
 }
 
 //--------------------------------------------------------------------------------------------------------------------------
 void FImGuiContext::SetShareMouseWithGameplay(bool Value)
 {
     bShareMouseWithGameplay = Value;
-    RefreshMouseCursor();
+	RefreshMouseCursor();
 }
 
 //--------------------------------------------------------------------------------------------------------------------------
 void FImGuiContext::RefreshMouseCursor()
 {
-    //-------------------------------------------------------------------------------------------
+	if (!GameViewport) return;
+
+	//-------------------------------------------------------------------------------------------
     // Focus the main widget when enabling input otherwise the mouse can still be hidden because
     // the gameplay might have the focus and might hide the cursor.
     //-------------------------------------------------------------------------------------------
@@ -720,7 +724,7 @@ void FImGuiContext::BuildFont()
 //--------------------------------------------------------------------------------------------------------------------------
 bool FImGuiContext::IsConsoleOpened() const
 {
-    return GameViewport->ViewportConsole && GameViewport->ViewportConsole->ConsoleState != NAME_None;
+	return GameViewport->ViewportConsole && GameViewport->ViewportConsole->ConsoleState != NAME_None;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------

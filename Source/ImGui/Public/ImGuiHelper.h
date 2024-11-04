@@ -9,7 +9,7 @@ IMGUI_API DECLARE_LOG_CATEGORY_EXTERN(LogImGui, Warning, All);
 
 struct ImGuiWindow;
 
-using CogTextureIndex = int32;
+using ImGuiextureIndex = int32;
 
 constexpr bool ForwardEvent = false;
 constexpr bool TerminateEvent = true;
@@ -50,9 +50,9 @@ public:
 
     static ImU32 ToImU32(const FVector4f& Value);
 
-    static CogTextureIndex ToTextureIndex(ImTextureID Index);
+    static ImGuiextureIndex ToTextureIndex(ImTextureID Index);
 
-    static ImTextureID ToImTextureID(CogTextureIndex Index);
+    static ImTextureID ToImTextureID(ImGuiextureIndex Index);
 
     static FVector2D RoundVector(const FVector2D& Vector);
 

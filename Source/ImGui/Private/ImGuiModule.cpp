@@ -1,6 +1,7 @@
 #include "ImGuiModule.h"
 
 #include "imgui.h"
+#include "Editor/ImGuiKeyInfoCustomization.h"
 #include "HAL/LowLevelMemTracker.h"
 #include "HAL/UnrealMemory.h"
 
@@ -23,11 +24,27 @@ static void ImGui_MemFree(void* Ptr, void* UserData)
 void FImGuiModule::StartupModule()
 {
     ImGui::SetAllocatorFunctions(ImGui_MemAlloc, ImGui_MemFree);
+
+	//FCoreDelegates::OnBeginFrame.AddLambda([]{ ImGui::Ren})
+
+	// Register keyinfo property customization
+#if WITH_EDITOR
+	if (auto PropertyEditorModule = FModuleManager::GetModulePtr<FPropertyEditorModule>("PropertyEditor"))
+	{
+		PropertyEditorModule->RegisterCustomPropertyTypeLayout("ImGuiKeyInfo", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FImGuiKeyInfoCustomization::MakeInstance));
+	}
+#endif
 }
 
 //--------------------------------------------------------------------------------------------------------------------------
 void FImGuiModule::ShutdownModule()
 {
+#if WITH_EDITOR
+	if (auto PropertyEditorModule = FModuleManager::GetModulePtr<FPropertyEditorModule>("PropertyEditor"))
+	{
+		PropertyEditorModule->UnregisterCustomPropertyTypeLayout("ImGuiKeyInfo");
+	}
+#endif
 }
 
 //--------------------------------------------------------------------------------------------------------------------------

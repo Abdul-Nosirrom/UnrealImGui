@@ -17,6 +17,16 @@
 		{
 			"Name": "ImGui",
 			"Type": "Runtime",
+			"LoadingPhase": "PreDefault"
+		},
+		{
+			"Name": "ImGuiWindow",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault"
+		},
+		{
+			"Name": "ImGuiDebug",
+			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
 	]

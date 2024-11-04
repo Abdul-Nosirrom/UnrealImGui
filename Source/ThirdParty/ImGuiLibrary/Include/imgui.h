@@ -1,6 +1,6 @@
 // dear imgui, v1.91.1
 // (headers)
-#define ImTextureID UTexture2D*
+
 // Help:
 // - See links below.
 // - Call and read ImGui::ShowDemoWindow() in imgui_demo.cpp. All applications in examples/ are doing that.

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "InputCoreTypes.h"
+#include "GameFramework/PlayerInput.h"
 #include "Styling/SlateTypes.h"
 
 #include "ImGuiKeyInfo.generated.h"
@@ -56,4 +57,29 @@ struct IMGUI_API FImGuiKeyInfo
 	{
 		return !(Lhs == Rhs);
 	}
+
+	FInputChord InputChord() const
+    {
+    	const bool bShift = Shift == ECheckBoxState::Checked;
+    	const bool bCtrl = Ctrl == ECheckBoxState::Checked;
+    	const bool bAlt = Alt == ECheckBoxState::Checked;
+    	const bool bCmd = Cmd == ECheckBoxState::Checked;
+	    return FInputChord(Key, bShift, bCtrl, bAlt, bCmd);
+    }
+
+	FKeyBind KeyBind() const
+    {
+	    FKeyBind KeyBind;
+    	KeyBind.Key = Key;
+    	KeyBind.Shift = Shift == ECheckBoxState::Checked;
+    	KeyBind.Control = Ctrl == ECheckBoxState::Checked;
+    	KeyBind.Alt = Alt == ECheckBoxState::Checked;
+    	KeyBind.Cmd = Cmd == ECheckBoxState::Checked;
+    	KeyBind.bIgnoreShift = Shift == ECheckBoxState::Unchecked;
+    	KeyBind.bIgnoreCtrl = Ctrl == ECheckBoxState::Unchecked;
+    	KeyBind.bIgnoreAlt = Alt == ECheckBoxState::Unchecked;
+    	KeyBind.bIgnoreCmd = Cmd == ECheckBoxState::Unchecked;
+
+    	return KeyBind;
+    }
 };

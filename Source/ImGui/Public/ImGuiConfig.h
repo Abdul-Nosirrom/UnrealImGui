@@ -3,6 +3,10 @@
 #include "Misc/AssertionMacros.h"
 #include "Engine/Texture2D.h"
 
+// BUG: Currently resizable tables have issues when it comes to input focus, the resize cursor overrides any "selection" in the table
+
+#define ENABLE_IMGUI !UE_BUILD_SHIPPING
+
 #define IM_ASSERT(Expr) ensure(Expr)
 
 #define IMGUI_DISABLE_OBSOLETE_FUNCTIONS

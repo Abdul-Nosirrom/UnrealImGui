@@ -1,13 +1,14 @@
+using System.IO;
 using UnrealBuildTool;
 
 public class ImGuiLibrary : ModuleRules
 {
-#if WITH_FORWARDED_MODULE_RULES_CTOR
 	public ImGuiLibrary(ReadOnlyTargetRules Target) : base(Target)
-#else
-	public ImGuiLibrary(TargetInfo Target)
-#endif
 	{
 		Type = ModuleType.External;
+		PublicSystemIncludePaths.Add(ModuleDirectory);
+
+		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Include"));
+
 	}
 }

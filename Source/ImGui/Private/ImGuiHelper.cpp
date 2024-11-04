@@ -130,13 +130,13 @@ ImU32 FImGuiHelper::ToImU32(const FVector4f& Value)
 }
 
 //--------------------------------------------------------------------------------------------------------------------------
-CogTextureIndex FImGuiHelper::ToTextureIndex(ImTextureID Index)
+ImGuiextureIndex FImGuiHelper::ToTextureIndex(ImTextureID Index)
 {
-    return static_cast<CogTextureIndex>(reinterpret_cast<intptr_t>(Index));
+    return static_cast<ImGuiextureIndex>(reinterpret_cast<intptr_t>(Index));
 }
 
 //--------------------------------------------------------------------------------------------------------------------------
-ImTextureID FImGuiHelper::ToImTextureID(CogTextureIndex Index)
+ImTextureID FImGuiHelper::ToImTextureID(ImGuiextureIndex Index)
 {
     return reinterpret_cast<ImTextureID>(static_cast<intptr_t>(Index));
 }

@@ -27,6 +27,8 @@ struct IMGUI_API FImGuiViewportData
 
 class IMGUI_API FImGuiContext : public TSharedFromThis<FImGuiContext>
 {
+	friend class UImGuiWindowManager;
+
 public:
 
 	void Initialize();
@@ -51,7 +53,7 @@ public:
 
 	void SetShareKeyboard(bool Value) { bShareKeyboard = Value; }
 
-	bool BeginFrame(float InDeltaTime);
+	void BeginFrame();
 
 	void EndFrame();
 
@@ -64,6 +66,8 @@ public:
 	TSharedPtr<const SImGuiWidget> GetMainWidget() const { return MainWidget; }
 
 private:
+
+	bool BeginFrame(float InDeltaTime);
 
 	void OnDisplayMetricsChanged(const FDisplayMetrics& DisplayMetrics) const;
 
@@ -143,6 +147,8 @@ private:
 	bool bIsThrottleDisabled = false;
 
 	bool bIsFirstFrame = true;
+
+	bool bCalledBeginFrame = false;
 
 	bool bWantCaptureMouse = false;
 

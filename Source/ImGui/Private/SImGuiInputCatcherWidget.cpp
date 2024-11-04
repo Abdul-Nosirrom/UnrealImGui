@@ -1,4 +1,4 @@
-#include "ImGuiInputCatcherWidget.h"
+#include "SImGuiInputCatcherWidget.h"
 
 #include "ImGuiContext.h"
 #include "ImGuiInputHelper.h"
